@@ -1,101 +1,157 @@
-import Image from "next/image";
+import logo from '@/assets/logo.svg'
+import womanImg from '@/assets/woman.svg'
+import { auth } from '@/auth'
+import PricingCard from '@/components/pricing-card'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { fetchSubscriptionByEmail } from '@/lib/stripe'
+import { Check, MenuIcon } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
+
+  const userEmail = session?.user?.email as string
+
+  const subscribe = await fetchSubscriptionByEmail(userEmail)
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <main>
+      <section className="container mx-auto px-2 pb-20 text-center md:px-0">
+        <nav className="flex items-center justify-between py-4">
+          <Image src={logo} alt="Logotipo" />
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MenuIcon size={24} className="cursor-pointer md:hidden" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="mr-4">
+              <DropdownMenuLabel>Menu</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <a href={'/#funcionamento'}>
+                <DropdownMenuItem>Funcionamento</DropdownMenuItem>
+              </a>
+              <DropdownMenuItem>Preço</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href="/sign-in">
+                  <Button variant={'bg-white'}>Login</Button>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <div className="hidden items-center gap-1 md:flex">
+            <Link href={'#funcionamento'}>
+              <Button variant={'link'}>Funcionamento</Button>
+            </Link>
+            <Link href={'#preco'}>
+              <Button variant={'link'}>Preço</Button>
+            </Link>
+            {session ? (
+              <Link href="/dashboard">
+                <Button variant={'bg-white'}>Dashboard</Button>
+              </Link>
+            ) : (
+              <Link href="/sign-in">
+                <Button variant={'bg-white'}>Login</Button>
+              </Link>
+            )}
+          </div>
+        </nav>
+        <h1 className="mt-8 font-bold text-2xl md:mt-16 md:text-6xl">
+          Simplifique Seus Estudos{' '}
+        </h1>
+        <p className="mx-auto mt-4 max-w-3xl text-gray-500 text-sm md:text-xl">
+          Deixe que nós fazemos a curadoria para você. Assine nossa plataforma e
+          receba todos os meses um ebook novo de programação.
+        </p>
+        <form className="mt-10 md:mt-16">
+          <div className="flex justify-center gap-2">
+            <Input
+              placeholder="Coloque seu email"
+              type="text"
+              className="max-w-sm border border-gray-300"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <Button>Assine Agora</Button>
+          </div>
+          <p className="mt-2 text-muted-foreground text-xs">
+            Comece sua assinatura agora mesmo. Cancele quando quiser.{' '}
+          </p>
+        </form>
+      </section>
+      <section className="bg-white py-8 md:py-16" id="funcionamento">
+        <div className="container mx-auto">
+          <h2 className="text-center font-bold text-2xl md:text-4xl">
+            Como funciona?
+          </h2>
+          <div className="mx-24 flex flex-col items-center justify-between md:flex-row xl:mx-80">
+            <Image
+              src={womanImg}
+              alt="Mulher carregando caixas"
+              className="max-w-xs"
+            />
+            <ul className="flex-shrink-0 space-y-4 text-lg text-muted-foreground md:space-y-6 md:text-2xl">
+              <li className="flex items-center justify-between gap-4">
+                Acesso a 1 ebook por mês{' '}
+                <Check size={24} className="text-green-600" />
+              </li>
+              <li className="flex items-center justify-between gap-4">
+                Curadoria especial
+                <Check size={24} className="text-green-600" />
+              </li>
+              <li className="flex items-center justify-between gap-4">
+                Cancele quando quiser
+                <Check size={24} className="text-green-600" />
+              </li>
+            </ul>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      </section>
+      <section className="px-2 py-8 text-center md:py-16" id="preco">
+        <h2 className="font-bold text-2xl md:mt-16 md:text-6xl">
+          Preço Simples e Transparente
+        </h2>
+        <p className="mx-auto mt-4 max-w-3xl text-gray-500 text-sm md:text-xl">
+          Pra que inúmeros planos quando nós sabemos exatamente o que é melhor
+          para você? Assine o nosso plano mensal Pro Premium VIP e garanta
+          mensalmente um ebook novo de programação. E por menos de um café por
+          dia.
+        </p>
+
+        <div className="flex justify-center">
+          <PricingCard />
+        </div>
+      </section>
+      <section className="bg-white text-center">
+        {!subscribe && (
+          <div className="py-10 md:py-16">
+            <h2 className="font-bold text-2xl md:mt-16 md:text-6xl">
+              Pronto Para Mudar Sua Vida?
+            </h2>
+            <p className="mx-auto mt-4 max-w-3xl text-gray-500 text-sm md:text-xl">
+              Faça como milhares de outras pessoas. Assine nosso produto e tenha
+              garantido seus estudos{' '}
+            </p>
+            <Button className="mt-14 w-96">Assine Agora</Button>
+            <p className="mt-2 text-muted-foreground text-xs">
+              Comece sua assinatura agora mesmo. Cancele quando quiser.{' '}
+            </p>
+          </div>
+        )}
+        <footer className="border-gray-300 border-t py-10">
+          <Image src={logo} alt="Logotipo" className="mx-auto" />
+          <p className="text-muted-foreground">
+            © 2024 LivroSaaS. Todos os direitos reservados.
+          </p>
+        </footer>
+      </section>
+    </main>
+  )
 }
